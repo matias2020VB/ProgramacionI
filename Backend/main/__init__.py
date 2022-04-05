@@ -12,9 +12,9 @@ def create_app():
     app = Flask(__name__)
     load_dotenv()
     #Cargar a la API el Recurso Profesors e indicar ruta
-    api.add_resource(resources.ProfessorsResource, '/professors')
+    api.add_resource(resources.UsuariosResource, '/Usuarios')
     #Cargar a la API el Recurso Profesor e indicar ruta
-    api.add_resource(resources.ProfessorResource, '/professor/<id>')
+    api.add_resource(resources.UsuarioResource, '/Usuario/<id>')
     #Cargar la aplicación en la API de Flask Restful
     api.init_app(app)
     return app
