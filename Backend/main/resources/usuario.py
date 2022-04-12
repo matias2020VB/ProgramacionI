@@ -3,8 +3,9 @@ from flask import request
 
 #Diccionario de prueba
 USUARIOS = {
-    1: {'firstname': 'Pedro', 'lastname': 'Marco'},
-    2: {'firstname': 'María', 'lastname': 'Sosa'}
+    1: {'firstname': 'Ana', 'lastname': 'Rotschtein'},
+    2: {'firstname': 'Roberto', 'lastname': 'Vilches'},
+    3: {'firstname': 'Silvina', 'lastname': 'Bru'}
 }
 
 #Recurso Profesor
@@ -28,10 +29,10 @@ class Usuario(Resource):
     #Modificar recurso
     def put(self, id):
         if int(id) in USUARIOS:
-            Usuario = USUARIOS[int(id)]
+            usuario = USUARIOS[int(id)]
             #Obtengo los datos de la solicitud
             data = request.get_json()
-            Usuario.update(data)
+            usuario.update(data)
             return usuario, 201
         return '', 404
 

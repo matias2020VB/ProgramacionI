@@ -3,8 +3,9 @@ from flask import request
 
 #Diccionario de prueba
 POEMAS = {
-    1: {'firstname': 'Pedro', 'lastname': 'Marco'},
-    2: {'firstname': 'María', 'lastname': 'Sosa'}
+    1: {'title' : 'Considerando el frio', 'Author': 'César Vallejo'},
+    2: {'title' : 'Ya no será', 'Author': 'Idea Vilariño'},
+    3: {'title' : 'No se porque me quejo', 'Author': 'Gloria Fuentes'}
 }
 
 #Recurso Profesor
@@ -14,7 +15,7 @@ class Poema(Resource):
         #Verificar que exista un Profesor con ese Id en diccionario
         if int(id) in POEMAS:
             #Devolver professor correspondiente
-            return POEMA[int(id)]
+            return POEMAS[int(id)]
         #Devolver error 404 en caso que no exista
         return '', 404
     #Eliminar recurso
@@ -43,7 +44,7 @@ class Poemas(Resource):
     #Insertar recurso
     def post(self):
         #Obtener datos de la solicitud
-        professor = request.get_json()
+        poema = request.get_json()
         id = int(max(POEMAS.keys())) + 1
-        POEMA[id] = Poema
+        POEMAS[id] = poema
         return [id], 201

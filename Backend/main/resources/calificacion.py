@@ -3,8 +3,9 @@ from flask import request
 
 #Diccionario de prueba
 CALIFICACIONES = {
-    1: {'firstname': 'Pedro', 'lastname': 'Marco'},
-    2: {'firstname': 'María', 'lastname': 'Sosa'}
+    1: {'calificacion' : 5},
+    2: {'calificacion' : 4},
+    3: {'calificacion' : 3}
 }
 
 #Recurso Profesor
@@ -43,7 +44,7 @@ class Calificaciones(Resource):
     #Insertar recurso
     def post(self):
         #Obtener datos de la solicitud
-        Calificacion = request.get_json()
+        calificacion = request.get_json()
         id = int(max(CALIFICACIONES.keys())) + 1
-        CALIFICACIONES[id] = professor
+        CALIFICACIONES[id] = calificacion
         return CALIFICACIONES[id], 201

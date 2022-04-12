@@ -1,0 +1,1 @@
+from .Professor import Professor as ProfessorModel
