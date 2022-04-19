@@ -1,35 +1,50 @@
 from .. import db
-
-class Professor(db.Model):
+class calificacion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    firstname = db.Column(db.String(100), nullable=False)
-    lastname = db.Column(db.String(100), nullable=False)
+    score = db.Column(db.Integer, nullable=False)
+    comment = db.Column(db.String(100), nullable=False)
+    usuarioID = db.Column(db.Integer, nullable=False)
+    poemaID = db.Column(db.Integer, nullable=False)
+    
     def __repr__(self):
-        return '<Professor: %r %r >' % (self.firstname, self.lastname)
+        return '<calificacion: %r %r >' % (self.id, self.score, self.comment, self.usuarioID, self.poemaID)
+    
+
     #Convertir objeto en JSON
     def to_json(self):
-        professor_json = {
+        calificacion_json = {
             'id': self.id,
-            'firstname': str(self.firstname),
-            'lastname': str(self.lastname),
-
+            'score': str(self.score),
+            'comment': str(self.comment),
+            'usuarioID': str(self.usuarioID),
+            'poemaID': str(self.poemaID),
         }
-        return professor_json
+        return calificacion_json
 
     def to_json_short(self):
-        professor_json = {
+        calificacion_json = {
             'id': self.id,
-            'lastname': str(self.lastname),
-
+            'score': str(self.score),
+            'comment': str(self.comment),
+            'usuarioID': str(self.usuarioID),
+            'poemaID': str(self.poemaID),
         }
-        return professor_json
+        
+        return calificacion_json
+    
     @staticmethod
+    
     #Convertir JSON a objeto
-    def from_json(professor_json):
-        id = professor_json.get('id')
-        firstname = professor_json.get('firstname')
-        lastname = professor_json.get('lastname')
-        return Professor(id=id,
-                    firstname=firstname,
-                    lastname=lastname,
+    
+    def from_json(calificacion_json):
+        id = calificacion_json.get('id')
+        score = mark_json.get('score')
+        comment = calificacion_json.get('comment')
+        userID = calificacion_json.get('usuarioID')
+        poemaID = calificacion_json.get('poemaID'),
+        return calificacion(id=id,
+                    score=score,
+                    comment=comment,
+                    usuarioID=usuarioID,
+                    poemaID=poemaID
                     )

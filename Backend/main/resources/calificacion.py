@@ -1,5 +1,7 @@
 from flask_restful import Resource
-from flask import request
+from flask import request, jsonify
+from .. import db
+from main.models import calificacionModel
 
 #Diccionario de prueba
 CALIFICACIONES = {
@@ -8,43 +10,40 @@ CALIFICACIONES = {
     3: {'calificacion' : 3}
 }
 
-#Recurso Profesor
-class Calificacion(Resource):
-    #Obtener recurso
-    def get(self, id):
-        #Verificar que exista un Profesor con ese Id en diccionario
-        if int(id) in CALIFICACIONES:
-            #Devolver professor correspondiente
-            return CALIFICACIONES[int(id)]
-        #Devolver error 404 en caso que no exista
-        return '', 404
-    #Eliminar recurso
-    def delete(self, id):
-        #Verificar que exista un Profesor con ese Id en diccionario
-        if int(id) in CALIFICACIONES:
-            #Eliminar professor del diccionario
-            del CALIFICACIONES[int(id)]
-            return '', 204
-        return '', 404
-    #Modificar recurso
-    def put(self, id):
-        if int(id) in CALIFICACIONES:
-            Calificacion = CALIFICACIONES[int(id)]
-            #Obtengo los datos de la solicitud
-            data = request.get_json()
-            Calificacion.update(data)
-            return Calificacion, 201
-        return '', 404
 
-#Recurso Profesores
+class Calificacion(Resource):
+  
+    def get(self, id):
+        
+       calificacion = db.session.query(calificacionModel).get_or_404(id)
+            return calificacion
+       
+    def put(self, id):
+        calificacion = db.session.query(calificacionModel).get_or_404(id)
+        data = request.get_json().items()
+        for key, value in data:
+            setattr(calificacion, key, value)
+        db.session.add(qualify)
+        db.session.commit()
+        return calificacion.to_json() , 201
+
+ def delete(self, id):
+        
+        calificacion = db.session.query(califcacionModel).get_or_404(id)
+        db.session.delete(calificacion)
+        db.session.commit()
+        return '', 204
+
+
 class Calificaciones(Resource):
-    #Obtener lista de recursos
+    
     def get(self):
-        return CALIFICACIONES
-    #Insertar recurso
+        calificacion = db.session.query(calificacionModel).all()
+        return jsonify([calificacion.to_json() for calificacion in calificaciones])
+
+   
     def post(self):
-        #Obtener datos de la solicitud
-        calificacion = request.get_json()
-        id = int(max(CALIFICACIONES.keys())) + 1
-        CALIFICACIONES[id] = calificacion
-        return CALIFICACIONES[id], 201
+        calificacion = calificacionModel.from_json(request.get_json())
+        db.session.add(calificacion)
+        db.session.commit()
+        return calificacion.to_json(), 201
