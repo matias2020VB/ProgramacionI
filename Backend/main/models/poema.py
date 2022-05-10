@@ -1,55 +1,57 @@
-from email.policy import default
 from .. import db
-from sqlalchemy.sql import func
+import statistics, datetime as dt
 
-class poema(db.Model):
+class Poema(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    usuarioID = db.Column(db.Integer, nullable=False)
-    body = db.Column(db.String(100), nullable=False)
-    dateTime = db.Column(db.DateTime(timezone=True), default=func.now())
+    titulo = db.Column(db.String(100), nullable=False)
+    cuerpo = db.Column(db.String(1000), nullable=False)
+    fecha = db.Column(db.DateTime, nullable=False, default=dt.datetime.now())
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+
+# Relaciones
+
+    usuario = db.relationship('Usuario', back_populates="poemas", uselist=False, single_parent=True)
+    calificaciones = db.relationship('Calificacion', back_populates="poema", cascade="all, delete-orphan")
 
     def __repr__(self):
-        return '<poema: %r %r >' % (self.id, self.title, self.usuarioID, self.body, self.dateTime)
-    
+        return f'<titulo: {self.titulo}, Poema: {self.cuerpo}, usuarioID: {self.user_id}, Date {self.fecha}>'
 
-    #Convertir objeto en JSON
+    def puntaje_promedio(self):
+        calificaciones_lista = []
+        if len(self.calificaciones) == 0:
+            promedio = 0
+        else:
+            for calificaciones in self.calificaciones:
+                puntaje = calificaciones.puntaje
+                calificaciones_lista.append(puntaje)
+            promedio = statistics.mean(calificaciones_lista)
+
+            return promedio
+
     def to_json(self):
         poema_json = {
-            'id': self.id,
-            'title': str(self.title),
-            'usuarioID': str(self.usuarioID),
-            'body': str(self.body),
-            'dateTime': str(self.dateTime),
+            'id' : self.id,
+            'titulo' : str(self.titulo),
+            'cuerpo' : str(self.cuerpo),
+            'usuario' : self.usuario.to_json(),
+            'date' : str(self.fecha.strftime("%d-%m-%Y")),
+            'calificaciones' : [calificacion.to_json_short() for calificacion in self.calificaciones],
+            'puntaje promedio' : self.puntaje_promedio()
         }
         return poema_json
 
     def to_json_short(self):
         poema_json = {
-            'id': self.id,
-            'title': str(self.title),
-            'usuarioID': str(self.usuarioID),
-            'body': str(self.body),
-            'dateTime': str(self.dateTime),
+            'id' : self.id,
+            'titulo' : self.titulo,
+            'cuerpo' : self.cuerpo,
         }
-        
-        
         return poema_json
-    
 
     @staticmethod
-    #Convertir JSON a objeto
-    
-    def from_json(poema_json):
+    def from_json(poem_json):
         id = poema_json.get('id')
-        title = poema_json.get('title')
-        usuarioID = poema_json.get('usuarioID')
-        body = poema_json.get('body')
-        dateTime = poema_json.get('dateTime'),
-
-        return Professor(id=id,
-                     title=title,
-                    userID=userID,
-                    body=body,
-                    dateTime=dateTime
-                    )
+        titulo = poema_json.get('titulo')
+        usuario_id = poema_json.get('usuario_id')
+        cuerpo = poema_json.get('cuerpo')
+        return Poema(id=id, titulo=titulo, usuario_id=usuario_id, cuerpo=cuerpo)

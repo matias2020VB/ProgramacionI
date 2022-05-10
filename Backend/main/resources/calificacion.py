@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask import request, jsonify
 from .. import db
-from main.models import calificacionModel
+from main.models import CalificacionModel
 
 #Diccionario de prueba
 CALIFICACIONES = {
@@ -15,11 +15,11 @@ class Calificacion(Resource):
   
     def get(self, id):
         
-       calificacion = db.session.query(calificacionModel).get_or_404(id)
-            return calificacion
+        calificacion = db.session.query(CalificacionModel).get_or_404(id)
+        return calificacion
        
     def put(self, id):
-        calificacion = db.session.query(calificacionModel).get_or_404(id)
+        calificacion = db.session.query(CalificacionModel).get_or_404(id)
         data = request.get_json().items()
         for key, value in data:
             setattr(calificacion, key, value)
@@ -27,9 +27,9 @@ class Calificacion(Resource):
         db.session.commit()
         return calificacion.to_json() , 201
 
- def delete(self, id):
+    def delete(self, id):
         
-        calificacion = db.session.query(califcacionModel).get_or_404(id)
+        calificacion = db.session.query(CalifcacionModel).get_or_404(id)
         db.session.delete(calificacion)
         db.session.commit()
         return '', 204
@@ -38,12 +38,12 @@ class Calificacion(Resource):
 class Calificaciones(Resource):
     
     def get(self):
-        calificacion = db.session.query(calificacionModel).all()
+        calificacion = db.session.query(CalificacionModel).all()
         return jsonify([calificacion.to_json() for calificacion in calificaciones])
 
    
     def post(self):
-        calificacion = calificacionModel.from_json(request.get_json())
+        calificacion = CalificacionModel.from_json(request.get_json())
         db.session.add(calificacion)
         db.session.commit()
         return calificacion.to_json(), 201
