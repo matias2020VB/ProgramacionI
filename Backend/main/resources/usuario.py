@@ -2,26 +2,22 @@ from flask_restful import Resource
 from flask import request, jsonify
 from .. import db
 from main.models import UsuarioModel
-
-#Diccionario de prueba
-USUARIOS = {
-    1: {'firstname': 'Ana', 'lastname': 'Rotschtein'},
-    2: {'firstname': 'Roberto', 'lastname': 'Vilches'},
-    3: {'firstname': 'Silvina', 'lastname': 'Bru'}
-}
+from main.models import CalificacionModel
+from main.models import PoemaModel
+from sqlalchemy import func
+from datetime import *
 
 #Recurso Usuario
 class Usuario(Resource):
    
     def get(self, id):
-        user = db.session.query(UsuarioModel).get_or_404(id)  
+        usuario = db.session.query(UsuarioModel).get_or_404(id)  
         return usuario.to_json()
-        
-    
+         
     def delete(self, id):
         
-        user = db.session.query(UsuarioModel).get_or_404(id)
-        db.session.delete(user)
+        usuario = db.session.query(UsuarioModel).get_or_404(id)
+        db.session.delete(usuario)
         db.session.commit()
         return '', 204
     
@@ -36,13 +32,48 @@ class Usuario(Resource):
 
 
 class Usuarios(Resource):
-    #Obtener lista de recursos
     def get(self):
-        usuarios = db.session.query(UsuarioModel).all()
-        return jsonify([usuario.to_json() for usuario in usuarios])
+        page = 1
+        per_page = 10
+        usuarios = db.session.query(UsuarioModel)
+        if request.get_json():
+            filters = request.get_json().items()
+            for key, value in filters:
+                if key =="page":
+                    page = int(value)
+                if key == "per_page":
+                    per_page = int(value)
+                
+                if key == 'nombre':
+                    usuarios = usuarios.filter(UsuarioModel.nombre.like('%'+value+'%'))
+
+                if key == "sort_by":
+                    if key == "nombre":
+                        usuarios = usuarios.order_by(UsuarioModel.nombre)
+    
+                    if value == "numero_poemas[desc]":
+                        usuarios=usuarios.outerjoin(UsuarioModel.poemas).group_by(UsuarioModel.id).order_by(func.count(UsuarioModel.id).desc())
+                    
+                    if value == "numero_poemas":
+                        print("Adentro")
+                        usuarios=usuarios.outerjoin(UsuarioModel.poemas).group_by(UsuarioModel.id).order_by(func.count(UsuarioModel.id))
+                    
+                    if value == "numero_calificaciones":
+                        print("Adentro")
+                        usuarios=usuarios.outerjoin(UsuarioModel.calificaciones).group_by(UsuarioModel.id).order_by(func.count(UsuarioModel.id).desc())
+                
+                  
+        usuarios = usuarios.paginate(page, per_page, True, 30)
+        
+        return jsonify({ 'usuarios': [usuario.to_json() for usuario in usuarios.items],
+                  'total': usuarios.total,
+                  'pages': usuarios.pages,
+                  'page': page
+                  })
+
+
 
     def post(self):
-
         usuario = UsuarioModel.from_json(request.get_json())
         db.session.add(usuario)
         db.session.commit()

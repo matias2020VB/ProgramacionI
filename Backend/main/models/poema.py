@@ -14,7 +14,7 @@ class Poema(db.Model):
     calificaciones = db.relationship('Calificacion', back_populates="poema", cascade="all, delete-orphan")
 
     def __repr__(self):
-        return f'<titulo: {self.titulo}, Poema: {self.cuerpo}, usuarioID: {self.user_id}, Date {self.fecha}>'
+        return f'<titulo: {self.titulo}, Poema: {self.cuerpo}, usuarioID: {self.user_id}, Fecha {self.fecha}>'
 
     def puntaje_promedio(self):
         calificaciones_lista = []
@@ -26,7 +26,7 @@ class Poema(db.Model):
                 calificaciones_lista.append(puntaje)
             promedio = statistics.mean(calificaciones_lista)
 
-            return promedio
+        return promedio
 
     def to_json(self):
         poema_json = {
@@ -34,9 +34,9 @@ class Poema(db.Model):
             'titulo' : str(self.titulo),
             'cuerpo' : str(self.cuerpo),
             'usuario' : self.usuario.to_json(),
-            'date' : str(self.fecha.strftime("%d-%m-%Y")),
-            'calificaciones' : [calificacion.to_json_short() for calificacion in self.calificaciones],
-            'puntaje promedio' : self.puntaje_promedio()
+            'fecha_hora' : str(self.fecha.strftime("%d-%m-%Y")),
+            'calificaciones' : [calificacion.to_json() for calificacion in self.calificaciones],
+            'puntaje_promedio' : self.puntaje_promedio()
         }
         return poema_json
 
@@ -49,7 +49,7 @@ class Poema(db.Model):
         return poema_json
 
     @staticmethod
-    def from_json(poem_json):
+    def from_json(poema_json):
         id = poema_json.get('id')
         titulo = poema_json.get('titulo')
         usuario_id = poema_json.get('usuario_id')

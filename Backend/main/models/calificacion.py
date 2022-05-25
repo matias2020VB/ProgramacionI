@@ -13,19 +13,17 @@ class Calificacion(db.Model):
     poema = db.relationship('Poema', back_populates="calificaciones", uselist=False, single_parent=True)
 
     def __repr__(self):
-        return f'<puntaje: {self.puntaje}, comentario: {self.comentario}, usuarios: {self.usuario_id}, poema {self.poemaa_id}>'
+        return f'<puntaje: {self.puntaje}, comentario: {self.comentario}, usuarios: {self.usuario_id}, poema {self.poema_id}>'
+    
     # Objeto a JSON
     def to_json(self):
-        poema = poema.to_json()
-        usuarios = [usuarioss.to_json() for usuarios in self.usuarios]
         calificacion_json = {
             'id': self.id,
-            'nombre': str(self.nombre),
-            'contrasña': str(self.contrasña),
-            'rol': str(self.rol),
-            'email': str(self.email),
-            'poema' : poema,
-            'usuario' : usuario
+            'puntaje': str(self.puntaje),
+            'comentario': str(self.comentario),
+            'usuario_id': self.usuario.to_json(),
+            'poema_id': self.poema.to_json_short()
+    
         }
         return calificacion_json
 
@@ -34,8 +32,8 @@ class Calificacion(db.Model):
             'id' : self.id,
             'puntaje' : self.puntaje,
             'comentario' : self.comentario,
-            'usuario_id' : self.usuario_id,
-            'poema_id' : self.poema_id
+            'usuario_id' : self.usuario.to_json(),
+            'poema_id' : self.poema.to_json(),
         }
         return calificacion_json
 
@@ -45,6 +43,6 @@ class Calificacion(db.Model):
         id = calificacion_json.get('id')
         puntaje = calificacion_json.get('puntaje')
         comentario = calificacion_json.get('comentario')
-        poemaa_id = calificacion_json.get('poema_id')
+        poema_id = calificacion_json.get('poema_id')
         usuario_id = calificacion_json.get('usuario_id')
-        return calificacion(id=id, puntaje=puntaje, comentario=comentario, poema_id=poema_id, usuario_id=usuario_id)
+        return Calificacion(id=id, puntaje=puntaje, comentario=comentario, poema_id=poema_id, usuario_id=usuario_id)
