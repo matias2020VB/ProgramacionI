@@ -40,3 +40,6 @@ class Calificaciones(Resource):
         db.session.add(calificacion)
         db.session.commit()
         return calificacion.to_json(), 201
+
+
+

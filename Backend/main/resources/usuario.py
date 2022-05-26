@@ -8,6 +8,7 @@ from sqlalchemy import func
 from datetime import *
 
 #Recurso Usuario
+
 class Usuario(Resource):
    
     def get(self, id):
@@ -30,6 +31,7 @@ class Usuario(Resource):
         db.session.commit()
         return usuario.to_json(), 201
 
+#Recurso Usuarios
 
 class Usuarios(Resource):
     def get(self):
